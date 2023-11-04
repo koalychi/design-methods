@@ -18,6 +18,7 @@ class DocumentProcessor:
         self.event_bus = event_bus
 
     def process_document(self, document, keywords):
+        document = document.lower()
         words = document.split()
         for i, word in enumerate(words):
             if word in keywords:
@@ -29,10 +30,16 @@ class DocumentProcessor:
 class UI:
     def __init__(self, event_bus):
         self.event_bus = event_bus
+        self.displayed_keywords = []
 
     def display_word_with_context(self, data):
         word, left_context, right_context = data
-        print(f"{left_context} << {word} >> {right_context}")
+        self.displayed_keywords.append((word, left_context, right_context))
+
+    def display_sorted_keywords(self):
+        sorted_keywords = sorted(self.displayed_keywords, key=lambda x: x[0])
+        for word, left_context, right_context in sorted_keywords:
+            print(f"{left_context} << {word} >> {right_context}")
 
 
 if __name__ == "__main__":
@@ -43,6 +50,8 @@ if __name__ == "__main__":
     event_bus.subscribe("word_processed", ui.display_word_with_context)
 
     document = "KWIC is an acronym for Key Word In Context, the most common format for concordance lines and the Wikipedia slogan in English, searched against a Wikipedia page, might yield a KWIC index as follows. A KWIC index usually uses a wide layout to allow the display of maximum 'in context' information"
-    keywords = ["concordance", "lines", "information"]
+    keywords = ["format", "concordance", "KWIC"]
 
-    document_processor.process_document(document, keywords)
+    document_processor.process_document(document, [keyword.lower() for keyword in keywords])
+
+    ui.display_sorted_keywords()
