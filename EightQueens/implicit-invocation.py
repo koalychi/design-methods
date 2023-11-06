@@ -1,3 +1,4 @@
+# author: Maratkanova Alexandra
 SIZE = 8
 
 class EventBus:
@@ -12,7 +13,7 @@ class EventBus:
     def publish(self, event, data=None):
         if event in self.subscribers:
             for callback in self.subscribers[event]:
-                callback(data)
+                callback()
 
 
 class UI:
@@ -57,10 +58,10 @@ class SolveBoard:
             return True
       
         for i in range(SIZE):
-            if self.is_safe_to_place(self.board, i, col):
+            if self.is_safe_to_place(i, col):
                 self.board[i][col] = 1
 
-                if self.place_queens(self.board, col + 1):
+                if self.place_queens(col + 1):
                     return True
 
                 self.board[i][col] = 0
@@ -68,7 +69,7 @@ class SolveBoard:
         return False
 
     def solve(self):
-      if self.place_queens(self.board, 0):
+      if self.place_queens(0):
           self.event_bus.publish("board_processed")
       else:
           self.event_bus.publish("no_solution")
